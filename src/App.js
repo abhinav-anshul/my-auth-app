@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react"
+import { useState } from "react"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { HomePage, AuthPage, Login, Signup } from "./ui"
+const App = () => {
+  const [user, setUser] = useState({})
+  useEffect(() => {
+    const theUser = localStorage.getItem("user")
 
-function App() {
+    if (theUser && !theUser.includes("undefined")) {
+      setUser(JSON.parse(theUser))
+    }
+  }, [])
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={user?.email ? <Navigate to="/home" /> : <AuthPage />} />
+        <Route path="/signup" element={user?.email ? <Navigate to="/home" /> : <Signup />} />
+        <Route path="/login" element={user?.email ? <Navigate to="/home" /> : <Login />} />
+        <Route
+          path="/home"
+          element={user?.email ? <HomePage user={user} /> : <Navigate to="/" />}
+        />
+      </Routes>
+    </BrowserRouter>
+  )
 }
 
-export default App;
+export default App
